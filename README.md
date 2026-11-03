@@ -48,6 +48,8 @@ Features a **Light Minimalist UI** with **Sky Blue and Sprinkle Green** accents,
 d:\khalsa\
 ├── chatbot.py        # Complete single-file Streamlit application
 ├── question.txt      # Comprehensive list of all offline-supported questions & topics
+├── requirement.txt   # Dependencies file
+├── requirements.txt  # Standard dependencies file
 └── README.md         # Project documentation and guide
 ```
 
@@ -57,15 +59,10 @@ d:\khalsa\
 
 ### Prerequisites
 
-Ensure you have Python 3.9+ installed along with the required libraries:
+Ensure you have Python 3.9+ installed, then install the dependencies:
 
 ```bash
-pip install streamlit
-```
-
-*(Optional, only if using live cloud APIs)*:
-```bash
-pip install google-generativeai openai
+pip install -r requirements.txt
 ```
 
 ### Running the Chatbot
