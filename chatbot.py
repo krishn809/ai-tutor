@@ -10,6 +10,14 @@ if hasattr(sys.stdout, "reconfigure"):
     except Exception:
         pass
 
+def get_secret(key: str, default: str = "") -> str:
+    try:
+        if hasattr(st, "secrets") and key in st.secrets:
+            return str(st.secrets[key])
+    except Exception:
+        pass
+    return os.environ.get(key, default)
+
 st.set_page_config(
     page_title="AI Chatbot | Minimalist AI Tutor",
     page_icon="🌱",
@@ -31,6 +39,9 @@ if "questions_asked" not in st.session_state:
 
 if "current_badge" not in st.session_state:
     st.session_state.current_badge = "🌱 AI Novice"
+
+if "quiz_feedback" not in st.session_state:
+    st.session_state.quiz_feedback = None
 
 LIGHT_MINIMALIST_CSS = """
 <style>
@@ -672,12 +683,12 @@ with st.sidebar:
     selected_model = ""
 
     if engine_choice == "Google Gemini":
-        gemini_api_key = st.text_input("Gemini API Key", type="password", value=os.environ.get("GEMINI_API_KEY", ""))
+        gemini_api_key = st.text_input("Gemini API Key", type="password", value=get_secret("GEMINI_API_KEY", ""))
         selected_model = st.selectbox("Model", ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash"])
         if not gemini_api_key:
             st.caption("🔑 Enter Gemini API key to enable live generation.")
     elif engine_choice == "OpenAI":
-        openai_api_key = st.text_input("OpenAI API Key", type="password", value=os.environ.get("OPENAI_API_KEY", ""))
+        openai_api_key = st.text_input("OpenAI API Key", type="password", value=get_secret("OPENAI_API_KEY", ""))
         selected_model = st.selectbox("Model", ["gpt-4o-mini", "gpt-4o", "gpt-3.5-turbo"])
         if not openai_api_key:
             st.caption("🔑 Enter OpenAI API key to enable live generation.")
@@ -703,12 +714,22 @@ with st.sidebar:
         user_choice = st.radio("Question:", quiz_options, index=None, key="sb_quiz_radio")
         if st.button("Check Answer", key="sb_quiz_submit"):
             if user_choice == "K-Means Clustering":
-                st.success("🎉 Correct! K-Means discovers clusters without labels. +15 XP!")
+                st.session_state.quiz_feedback = ("success", "🎉 Correct! K-Means discovers clusters without labels. +15 XP!")
                 update_xp_and_badge(15)
                 st.session_state.quizzes_completed += 1
-                st.rerun()
             elif user_choice:
-                st.error("❌ Not quite! K-Means Clustering is unsupervised. Try another!")
+                st.session_state.quiz_feedback = ("error", "❌ Not quite! K-Means Clustering is unsupervised. Try another!")
+            else:
+                st.session_state.quiz_feedback = ("warning", "Please select an answer first.")
+
+        if st.session_state.quiz_feedback:
+            f_type, f_msg = st.session_state.quiz_feedback
+            if f_type == "success":
+                st.success(f_msg)
+            elif f_type == "error":
+                st.error(f_msg)
+            else:
+                st.warning(f_msg)
 
     st.markdown("---")
 
@@ -739,6 +760,7 @@ with st.sidebar:
     st.markdown("---")
     if st.button("🗑️ Clear Chat History", use_container_width=True):
         st.session_state.messages = []
+        st.session_state.quiz_feedback = None
         st.rerun()
 
 header_html = """
@@ -820,6 +842,7 @@ else:
     with col_r2:
         if st.button("🔄 New Conversation", key="btn_reset_chat", use_container_width=True):
             st.session_state.messages = []
+            st.session_state.quiz_feedback = None
             st.rerun()
 
 with st.form(key="chat_typing_space", clear_on_submit=True):
