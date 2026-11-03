@@ -65,7 +65,7 @@ Ensure you have Python 3.9+ installed, then install the dependencies:
 pip install -r requirements.txt
 ```
 
-### Running the Chatbot
+### Running Locally
 
 Run the application with Streamlit:
 
@@ -77,6 +77,28 @@ The application will launch in your browser at:
 ```text
 http://localhost:8501
 ```
+
+---
+
+## ☁️ Deploying to Streamlit Community Cloud
+
+1. **Push your repository to GitHub**:
+   ```bash
+   git remote add origin https://github.com/<your-username>/<your-repo-name>.git
+   git branch -M main
+   git push -u origin main
+   ```
+
+2. **Deploy on Streamlit Cloud**:
+   - Go to [share.streamlit.io](https://share.streamlit.io/) and log in with GitHub.
+   - Click **"New app"**.
+   - Select your repository, set the branch to `main`, and set **Main file path** to `chatbot.py`.
+   - *(Optional)* In **Advanced settings > Secrets**, you can add your API keys:
+     ```toml
+     GEMINI_API_KEY = "your-gemini-key"
+     OPENAI_API_KEY = "your-openai-key"
+     ```
+   - Click **"Deploy!"**.
 
 ---
 
